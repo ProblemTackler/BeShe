@@ -1,0 +1,22 @@
+#!/bin/sh
+# BESHE launcher. Installation is user-local; no administrator privileges needed.
+set -eu
+
+BESHE_HOME="${BESHE_HOME:-$HOME/.local/share/beshe}"
+CLASSES="$BESHE_HOME/classes"
+
+if [ ! -d "$CLASSES" ]; then
+  echo "BESHE is not installed correctly. Run the included install.sh first." >&2
+  exit 1
+fi
+
+JAVA="${JAVA_HOME:+$JAVA_HOME/bin/java}"
+if [ -z "$JAVA" ] || [ ! -x "$JAVA" ]; then
+  JAVA="$(command -v java || true)"
+fi
+if [ -z "$JAVA" ]; then
+  echo "BESHE requires a JDK 17 or newer. Install a JDK and rerun install.sh." >&2
+  exit 1
+fi
+
+exec "$JAVA" --add-modules jdk.jshell -cp "$CLASSES" BESHELL "$@"
